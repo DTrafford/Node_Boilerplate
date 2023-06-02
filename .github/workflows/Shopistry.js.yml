@@ -1,0 +1,33 @@
+# Performs a clean installation of node dependencies, cache/restore them, builds the source code, runs linters, runs tests
+# across node versions 16 and 18.
+
+name: Formatting & Linting
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16, 18]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+      - run: yarn install --frozen-lockfile
+      - name: Prettier & ESLint
+        uses: wearerequired/lint-action@v2.3.0
+        with:
+          prettier: true
+          prettier_auto_fix: true
+          eslint: true
